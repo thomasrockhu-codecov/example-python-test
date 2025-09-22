@@ -3,6 +3,8 @@ on: [push, pull_request]
 jobs:
   run:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -14,9 +16,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run tests and collect coverage
         run: |
-          pytest --cov app --junitxml=junit.xml -o junit_family=legacy
+          pytest app --junitxml=junit.xml -o junit_family=legacy
       - name: Upload to Sentry
         if: ${{ !cancelled() }}
-        name: getsentry/prevent-action@v0
-        env:
-          PREVENT_TOKEN: ${{ secrets.PREVENT_TOKEN }}
+        uses: getsentry/prevent-action@v0
